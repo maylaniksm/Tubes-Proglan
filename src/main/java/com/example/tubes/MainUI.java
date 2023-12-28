@@ -8,6 +8,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MainUI {
     private TextField namaField;
@@ -66,6 +69,11 @@ public class MainUI {
         Button deleteButton = new Button("Hapus");
         deleteButton.setOnAction(e -> hapusSewaLapangan());
         grid.add(deleteButton, 2, 4);
+
+        //tombol membuat file
+        Button saveButton = new Button("Save to File");
+        saveButton.setOnAction(e -> saveDataToFile("output.txt"));
+        grid.add(saveButton, 3, 4);
 
         // Tabel
         tableView = new TableView<>();
@@ -173,6 +181,19 @@ public class MainUI {
             showErrorDialog("Pilih data yang akan dihapus.");
         }
     }
+
+    public void saveDataToFile(String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (SewaLapangan sewa : data) {
+                writer.write(String.format("%s,%s,%s,%s%n",
+                        sewa.getNamaPenyewa(), sewa.getTanggal(), sewa.getJamMulai(), sewa.getJamSelesai()));
+            }
+            System.out.println("Data saved to file successfully.");
+        } catch (IOException e) {
+            showErrorDialog("Error saving data to file: " + e.getMessage());
+        }
+    }
+
     private boolean cekKonflik(String tanggal, String jamMulai, String jamSelesai) {
         for (SewaLapangan sewa : data) {
             if (sewa.getTanggal().equals(tanggal) && sewa.getJamMulai().equals(jamMulai) && sewa.getJamSelesai().equals(jamSelesai)) {
